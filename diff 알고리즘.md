@@ -177,10 +177,79 @@ const isNodeChanged = (node1, node2) => {
 
 ---
 
-참고문헌
+여기까지 이해했다면, 이제는 리액트에서 왜 리스트에 key값을 사용하는지 이해할 수 있다. (아래의 모든 예제들은 리액트 공식 문서에 존재하는 것들을 가져왔습니다.)
+
+```html
+// 실제 DOM
+<ul>
+  <li>first</li>
+  <li>second</li>
+</ul>
+
+// 가상 DOM
+<ul>
+  <li>first</li>
+  <li>second</li>
+  <li>third</li>
+</ul>
+```
+
+위의 diff 알고리즘을 해당 경우에 적용해본다면 다음과 같은 흐름이 될 것이다.
+
+1. 실제 DOM의 root와 가상 DOM의 root를 비교한다. 달라진 것이 없으므로 그대로 간다.
+2. 실제 DOM의 자식들과 가상 DOM의 자식들을 꺼내어 배열로 만든다. 두 배열 중 더 큰 인덱스 값을 max로 잡고 0부터 max까지 순회를 시작한다.
+3. 실제 DOM의 첫번째 자식인 `<li>first</li>`, 가상 DOM의 첫번째 자식인 `<li>first</li>`를 비교한다. 똑같기 때문에 넘어간다.
+4. 실제 DOM의 두번째 자식인 `<li>second</li>`, 가상 DOM의 두번째 자식인 `<li>second</li>`를 비교한다. 똑같기 때문에 넘어간다.
+5. 실제 DOM의 세번째 자식인 `undefined`, 가상 DOM의 세번째 자식인 `<li>third</li>`를 비교한다.  실제 노드는 없는데 가상 노드는 존재하기 때문에 가상 노드를 추가한다.
+
+변경된 부분이 맨마지막이기 때문에 for loop를 통한 비교로 효율적인 처리가 가능하다.
+
+두번째 예제이다.
+
+```html
+// 실제 DOM
+<ul>
+  <li>Duke</li>
+  <li>Villanova</li>
+</ul>
+
+// 가상 DOM
+<ul>
+  <li>Connecticut</li>
+  <li>Duke</li>
+  <li>Villanova</li>
+</ul>
+```
+
+1. 실제 DOM의 root와 가상 DOM의 root를 비교한다. 달라진 것이 없으므로 그대로 간다.
+2. 실제 DOM의 자식들과 가상 DOM의 자식들을 꺼내어 배열로 만든다. 두 배열 중 더 큰 인덱스 값을 max로 잡고 0부터 max까지 순회를 시작한다.
+3. 실제 DOM의 첫번째 자식인 `<li>Duke</li>`와 가상 DOM의 첫번째 자식인 `<li>Connecticut</li>`의 textContent가 다르다. 때문에 실제 DOM의 첫번째 자식을 가상 DOM의 첫번째 자식으로 교체한다.
+4.  두번째의 경우에도 다르다. 때문에 실제 DOM의 두번째 자식을 가상 DOM의 두번째 자식으로 교체한다.
+5. 세번째 경우, 실제 DOM의 3번째 자식은 존재하지 않지만 가상 DOM의 3번째 자식은 존재한다. 때문에 가상 DOM의 3번째 자식을 실제 DOM에 추가한다.
+
+대충봐도 엄청나게 비효율적임을 알 수 있다. 가상 DOM의 첫번째 자식만 실제 DOM의 맨 앞에 추가하면 되는 작업임에도 불구하고 단순한 for loop는 3번의 교체 작업을 수행한다.
+
+리액트에서는 이러한 비효율적인 과정을 없애기 위해 key를 사용한다. 과정은 다음과 같다.
+
+---
+
+이 과정은 아직 찾지 못했다. 대부분의 블로그에서는 단순히 key를 넣는 것이 더 효율적이다라고 설명할 뿐 리액트에서 어떻게 key를 처리해서 빨라지는 지에 대한 이야기가 없다. 지금 추측하기로는 이 방법이 아닐까 싶다.
+
+1. 속성값의 이름 중 key가 있는 지 확인하고 그렇다면 다음 작업을 수행한다.
+2. 변경되는 주체는 가상 DOM이다. 때문에 가상 DOM을 순회한다. 
+3. 가상 DOM의 노드가 가지는 key를 실제 DOM의 노드 중에서 가지고 있는지 확인한다.
+4. 그러한 노드가 없다면 그대로 실제 DOM에 추가, 그러한 노드가 있다면 위의 `isNodeChanged` 함수를 통해 변경된 지점이 있는지 파악. 변경되었다면 교체, 그렇지 않다면 그대로 간다.
+
+확실하지 않기 때문에 조금 더 찾아보고 이 부분을 추가하겠다.
+
+---
+
+### 참고문헌
 
 프레임워크 없는 프론트엔드 개발
 
 https://ko.reactjs.org/docs/reconciliation.html
 
 https://junilhwang.github.io/TIL/Javascript/Design/Vanilla-JS-Component/#_3-component-core-%E1%84%87%E1%85%A7%E1%86%AB%E1%84%80%E1%85%A7%E1%86%BC
+
+https://developer-talk.tistory.com/102
