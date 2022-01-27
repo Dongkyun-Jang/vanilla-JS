@@ -18,3 +18,7 @@
 
 **그렇다면 지금의 내가 이 사이트를 만들 수 있는 능력이 있는가? 냉정하게 없다. 때문에 이를 준비하는 과정이 필요하다. 필요한 내용들이 해당 폴더에 정리하고 이를 바탕으로 나의 최종 목적지에 도달해보자. **
 
+
+<img width="567" alt="before_react" src="https://user-images.githubusercontent.com/57230590/151300167-2d1ea156-38d3-401d-b4a4-c169a6a21168.png">
+<img width="490" alt="after_react" src="https://user-images.githubusercontent.com/57230590/151300175-0c68b75f-1d80-4720-a4f8-353075306c91.png">
+![omit_react](https://user-images.githubusercontent.com/57230590/151300292-53bce699-26ae-4bca-a489-b4e96c7ff85f.jpeg)
